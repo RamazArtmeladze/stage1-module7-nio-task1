@@ -10,29 +10,25 @@ public class FileReader {
 
     public Profile getDataFromFile(File file) {
         try {
-            // Open a BufferedReader using try-with-resources
             try (BufferedReader reader = Files.newBufferedReader(file.toPath())) {
-                // Read the file content
                 String fileContent = reader.readLine();
+                if (fileContent != null) { // Check if file is not empty
+                    Map<String, String> keyValuePairs = parseData(fileContent);
+                    if (keyValuePairs.containsKey("Name") && keyValuePairs.containsKey("Age") &&
+                            keyValuePairs.containsKey("Email") && keyValuePairs.containsKey("Phone")) {
+                        String name = keyValuePairs.get("Name");
+                        Integer age = Integer.parseInt(keyValuePairs.get("Age"));
+                        String email = keyValuePairs.get("Email");
+                        Long phone = Long.parseLong(keyValuePairs.get("Phone"));
 
-                // Step 2: Parse the Data
-                Map<String, String> keyValuePairs = parseData(fileContent);
-
-                // Step 3: Create a Profile Object
-                String name = keyValuePairs.get("Name");
-                Integer age = Integer.parseInt(keyValuePairs.get("Age"));
-                String email = keyValuePairs.get("Email");
-                Long phone = Long.parseLong(keyValuePairs.get("Phone"));
-
-                Profile profile = new Profile(name, age, email, phone);
-
-                return profile;
+                        return new Profile(name, age, email, phone);
+                    }
+                }
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
-            return null; // Handle error
+            e.printStackTrace(); // Handle error
         }
+        return null; // Handle invalid data or return a default Profile
     }
 
     private Map<String, String> parseData(String fileContent) {
