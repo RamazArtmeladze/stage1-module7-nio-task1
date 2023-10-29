@@ -1,8 +1,8 @@
 package com.epam.mjc.nio;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,21 +10,25 @@ public class FileReader {
 
     public Profile getDataFromFile(File file) {
         try {
-            // Step 1: Read the File Data
-            String fileContent = Files.readString(file.toPath());
+            // Open a BufferedReader using try-with-resources
+            try (BufferedReader reader = Files.newBufferedReader(file.toPath())) {
+                // Read the file content
+                String fileContent = reader.readLine();
 
-            // Step 2: Parse the Data
-            Map<String, String> keyValuePairs = parseData(fileContent);
+                // Step 2: Parse the Data
+                Map<String, String> keyValuePairs = parseData(fileContent);
 
-            // Step 3: Create a Profile Object
-            String name = keyValuePairs.get("Name");
-            Integer age = Integer.parseInt(keyValuePairs.get("Age"));
-            String email = keyValuePairs.get("Email");
-            Long phone = Long.parseLong(keyValuePairs.get("Phone"));
+                // Step 3: Create a Profile Object
+                String name = keyValuePairs.get("Name");
+                Integer age = Integer.parseInt(keyValuePairs.get("Age"));
+                String email = keyValuePairs.get("Email");
+                Long phone = Long.parseLong(keyValuePairs.get("Phone"));
 
-            Profile profile = new Profile(name, age, email, phone);
+                Profile profile = new Profile(name, age, email, phone);
 
-            return profile;
+                return profile;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return null; // Handle error
